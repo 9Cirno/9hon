@@ -1,0 +1,9 @@
+npm install -g create-react-app
+
+npm install styled-components
+
+npm install react-transition-group
+
+npm install redux
+
+npm install react-redux

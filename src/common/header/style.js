@@ -4,6 +4,14 @@ import logoPic from '../../statics/logo.png'
 export const HeaderWrapper = styled.div`
 	height:58px;
 	border-bottom: 1px solid #f0f0f0;
+	.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+	}
 `
 
 
@@ -114,7 +122,7 @@ export const Button = styled.div`
 export const SearchWrapper = styled.div`
 	position:relative;
 	float: left;
-	.iconfont{
+	.zoom{
 		position: absolute;
 		right:5px;
 		bottom:5px;
@@ -138,6 +146,7 @@ export const SearchInfo = styled.div`
 	width:240px;
 	padding:0 20px;
 	box-shadow: 0 0 8px rgba(0,0,0,.2);
+	background:#fff;
 `;
 
 export const SearchInfoList = styled.div`
@@ -154,6 +163,17 @@ export const SearchInfoTitle = styled.div`
 export const SearchInfoSwitch = styled.span`
 	float:right;
 	font-size: 13px;
+	cursor:pointer;
+	.spin{
+		display:block;
+		float:left;
+		font-size: 12px;
+		margin-right:2px;
+		transition: all .2s ease-in;
+		transform: rotate(90deg);
+		transform-origin: center center; 
+	}
+
 `
 export const SearchInfoItem = styled.a`
 	line-height: 20px;

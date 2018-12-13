@@ -5,7 +5,7 @@ import { fromJS } from 'immutable'
 const changeList = (data) => ({
 	type: constants.CHANGE_LIST,
 	data: fromJS(data),
-	totalPage:Math.cell(data.length/10)
+	totalPage:Math.ceil(data.length/10)
 })
 
 export const searchFocus = ()=>({
@@ -33,7 +33,8 @@ export const getList = ()=>{
 		const fakeapi = '/api/headerList.json'
 		axios.get(fakeapi).then((res) =>{
 			const data = res.data.data;
-			dispatch(changeList(data))
+			const action = changeList(data);
+			dispatch(action);
 		}).catch(() =>{
 			console.log('error')
 		})

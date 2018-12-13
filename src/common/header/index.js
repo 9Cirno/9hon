@@ -6,7 +6,7 @@ import {actionCreators} from './store'
 class Header extends Component{
 
 	render(){
-		const {focused, handleInputFocus,handleInputBlur} = this.props;
+		const {focused, handleInputFocus,handleInputBlur,list} = this.props;
 		return(
 			<HeaderWrapper>
 				<Logo />
@@ -25,11 +25,11 @@ class Header extends Component{
 						>
 							<NavSearch
 								className={focused ? 'focused':''}
-								onFocus={handleInputFocus}
+								onFocus={()=>handleInputFocus(list)}
 								onBlur={handleInputBlur}
 							></NavSearch>
 						</CSSTransition>
-						<i className={focused ? 'focused iconfont':'iconfont'}>&#xe60c;</i>
+						<i className={focused ? 'focused zoom iconfont':'iconfont zoom'}>&#xe60c;</i>
 						{this.getListArea()}
 					</SearchWrapper>
 				</Nav>
@@ -46,13 +46,16 @@ class Header extends Component{
 
 	getListArea(){
 		const {totalPage, mouseIn,focused,page, list, handleMouseEnter,handleMouseLeave,handleChangePage} = this.props;
-		const pageList = [];
+		var pageList = [];
 		const jsList = list.toJS();
-		for (let i = (page - 1)*10; i<page*10; i++){
-			if(i<jsList.length){
-			pageList.push(	
-				<SearchInfoItem key={jsList[i]}>{jsList[i]}</SearchInfoItem>
-			)}
+		pageList = [];
+		if (jsList.length){
+			for (let i = (page - 1)*10; i<page*10; i++){
+				if(i<jsList.length){
+				pageList.push(	
+					<SearchInfoItem key={jsList[i]}>{jsList[i]}</SearchInfoItem>
+				)}
+			}
 		}
 		if (focused||mouseIn){
 			return (
@@ -63,7 +66,10 @@ class Header extends Component{
 				>
 					<SearchInfoTitle>
 						Hot Search
-						<SearchInfoSwitch onClick={()=>handleChangePage(page, totalPage)}>change</SearchInfoSwitch>		
+						<SearchInfoSwitch onClick={()=>handleChangePage(page, totalPage,this.spinIcon)} className='unselectable'>
+						<i ref={(icon)=>(this.spinIcon=icon)} className='iconfont spin'>&#xe851;</i>
+						change
+						</SearchInfoSwitch>		
 					</SearchInfoTitle>
 					<SearchInfoList>
 						{pageList}
@@ -102,12 +108,9 @@ const mapStateToProps = (state) =>{
 
 const mapdispatchtoprops = (dispatch) =>{
 	return {
-		handleInputFocus(){
-			const action = actionCreators.searchFocus()
-			const getlist = actionCreators.getList()
-			debugger;
-			dispatch(getlist);
-			dispatch(action);
+		handleInputFocus(list){
+			(list.size === 0) && dispatch(actionCreators.getList());
+			dispatch(actionCreators.searchFocus());
 		},
 		handleInputBlur(){
 			const action = actionCreators.searchBlur()
@@ -122,7 +125,14 @@ const mapdispatchtoprops = (dispatch) =>{
 			const action = actionCreators.mouseLeave()
 			dispatch(action)
 		},
-		handleChangePage(page, totalPage){
+		handleChangePage(page, totalPage, spin){
+			let origin = spin.style.transform.replace(/[^0-9]/ig,'')
+			if(origin){
+				origin = parseInt(origin, 10)
+			}else{
+				origin=0
+			}
+			spin.style.transform = 'rotate('+(origin+180)+'deg)'
 			const nextpage = page===totalPage? 1:page+1;
 			const action = actionCreators.changePage(nextpage)
 			dispatch(action)

@@ -7,3 +7,11 @@ npm install react-transition-group
 npm install redux
 
 npm install react-redux
+
+npm install immutable
+
+npm install redux-immutable
+
+npm install redux-thunk
+
+npm install axios

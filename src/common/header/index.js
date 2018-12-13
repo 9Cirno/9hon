@@ -1,9 +1,12 @@
 import React, {Component} from 'react'
-import {HeaderWrapper, Logo, Nav,NavItem,NavSearch,Addition,Button,SearchWrapper} from './style.js'
+import {SearchInfoList,SearchInfoItem,SearchInfoSwitch,SearchInfoTitle,SearchInfo, HeaderWrapper, Logo, Nav,NavItem,NavSearch,Addition,Button,SearchWrapper} from './style.js'
 import {CSSTransition} from 'react-transition-group';
 import {connect} from 'react-redux';
 import {actionCreators} from './store'
-const Header = (props) =>{
+class Header extends Component{
+
+	render(){
+		const {focused, handleInputFocus,handleInputBlur} = this.props;
 		return(
 			<HeaderWrapper>
 				<Logo />
@@ -16,17 +19,18 @@ const Header = (props) =>{
 					</NavItem>
 					<SearchWrapper>
 						<CSSTransition
-							in={props.focused}
+							in={focused}
 							timeout = {200}
 							classNames="slide"
 						>
 							<NavSearch
-								className={props.focused ? 'focused':''}
-								onFocus={props.handleInputFocus}
-								onBlur={props.handleInputBlur}
+								className={focused ? 'focused':''}
+								onFocus={handleInputFocus}
+								onBlur={handleInputBlur}
 							></NavSearch>
 						</CSSTransition>
-						<i className={props.focused ? 'focused iconfont':'iconfont'}>&#xe60c;</i>
+						<i className={focused ? 'focused iconfont':'iconfont'}>&#xe60c;</i>
+						{this.getListArea()}
 					</SearchWrapper>
 				</Nav>
 				<Addition>
@@ -37,7 +41,44 @@ const Header = (props) =>{
 					Write</Button>
 				</Addition>
 			</HeaderWrapper>
-		)
+		);
+	}
+
+	getListArea(){
+		const {totalPage, mouseIn,focused,page, list, handleMouseEnter,handleMouseLeave,handleChangePage} = this.props;
+		const pageList = [];
+		const jsList = list.toJS();
+		for (let i = (page - 1)*10; i<page*10; i++){
+			if(i<jsList.length){
+			pageList.push(	
+				<SearchInfoItem key={jsList[i]}>{jsList[i]}</SearchInfoItem>
+			)}
+		}
+		if (focused||mouseIn){
+			return (
+				<SearchInfo 
+				onMouseEnter={handleMouseEnter}
+				onMouseLeave={handleMouseLeave}
+
+				>
+					<SearchInfoTitle>
+						Hot Search
+						<SearchInfoSwitch onClick={()=>handleChangePage(page, totalPage)}>change</SearchInfoSwitch>		
+					</SearchInfoTitle>
+					<SearchInfoList>
+						{pageList}
+					</SearchInfoList>
+				</SearchInfo>
+			)
+		}else{
+			return null;
+		}
+
+
+	}
+
+
+
 
 	
 }
@@ -47,10 +88,15 @@ const Header = (props) =>{
 
 
 
-
 const mapStateToProps = (state) =>{
 	return{
-		focused: state.header.focused
+		// state.get('header').get('focused')
+		focused: state.getIn(['header', 'focused']),
+		list: state.getIn(['header', 'list']),
+		page: state.getIn(['header','page']),
+		mouseIn: state.getIn(['header','mouseIn']),
+		totalPage: state.getIn(['header','totalPage'])
+
 	}
 }
 
@@ -58,12 +104,30 @@ const mapdispatchtoprops = (dispatch) =>{
 	return {
 		handleInputFocus(){
 			const action = actionCreators.searchFocus()
+			const getlist = actionCreators.getList()
+			debugger;
+			dispatch(getlist);
 			dispatch(action);
 		},
 		handleInputBlur(){
 			const action = actionCreators.searchBlur()
 			dispatch(action)
+		},
+
+		handleMouseEnter(){
+			const action = actionCreators.mouseEnter()
+			dispatch(action)
+		},
+		handleMouseLeave(){
+			const action = actionCreators.mouseLeave()
+			dispatch(action)
+		},
+		handleChangePage(page, totalPage){
+			const nextpage = page===totalPage? 1:page+1;
+			const action = actionCreators.changePage(nextpage)
+			dispatch(action)
 		}
+
 
 	}
 }

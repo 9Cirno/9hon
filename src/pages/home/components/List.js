@@ -1,16 +1,18 @@
 import React , {Component} from 'react';
-import {ListItem, ListInfo} from '../style'
+import {LoadMore,ListItem, ListInfo} from '../style'
 import {connect} from 'react-redux'
+import {actionCreators} from '../store'
+
 class List extends Component{
 
 	render(){
-		const {list} = this.props;
+		const {list, getMoreList, page} = this.props;
 		return(
 			<div>
 				{
-					list.map((item)=>{
+					list.map((item,index)=>{
 						return(
-							<ListItem key={item.get('id')}>
+							<ListItem key={index}>
 								<img 
 								alt=''
 								className='pic'
@@ -23,14 +25,23 @@ class List extends Component{
 						)
 					})
 				}
-
+				<LoadMore onClick={()=> getMoreList(page)}>
+					⑨ Load More ⑨
+				</LoadMore>
 			</div>
 		)
 	}
 }
 
 const mapState =(state)=>({
-	list : state.getIn(['home','articleList'])
+	list : state.getIn(['home','articleList']),
+	page : state.getIn(['home','articlePage'])
 });
 
-export default connect(mapState,null)(List);
+const mapDispatch =(dispatch)=>({
+	getMoreList(Page){
+		dispatch(actionCreators.getModeList(Page))
+	}
+})
+
+export default connect(mapState,mapDispatch)(List);

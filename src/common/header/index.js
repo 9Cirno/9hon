@@ -3,17 +3,27 @@ import {SearchInfoList,SearchInfoItem,SearchInfoSwitch,SearchInfoTitle,SearchInf
 import {CSSTransition} from 'react-transition-group';
 import {connect} from 'react-redux';
 import {actionCreators} from './store'
+import {Link} from 'react-router-dom'
+import {actionCreators as loginActionCreators} from '../../pages/login/store'
 class Header extends Component{
 
 	render(){
-		const {focused, handleInputFocus,handleInputBlur,list} = this.props;
+		const {focused, handleInputFocus,handleInputBlur,list,login} = this.props;
 		return(
 			<HeaderWrapper>
-				<Logo />
+				<Link to='/'>
+				<Logo/>
+				</Link>
 				<Nav>
 					<NavItem className='left active'>Index</NavItem>
 					<NavItem className='left'>APP</NavItem>
-					<NavItem className='right'>Login</NavItem>
+					{
+						login 
+						? 
+						<Link to='/'><NavItem className='right' onClick={this.props.logout}>Logout</NavItem></Link>
+						:
+						<Link to='/login'><NavItem className='right'>Login</NavItem></Link>
+					}
 					<NavItem className='right'>
 						<i className='iconfont'>&#xe636;</i>
 					</NavItem>
@@ -35,10 +45,12 @@ class Header extends Component{
 				</Nav>
 				<Addition>
 					<Button className='reg'>sign up</Button>
+					<Link to='/write'>
 					<Button className='writing'>
 					<i className='iconfont'
 					>&#xe608;</i>
 					Write</Button>
+					</Link>
 				</Addition>
 			</HeaderWrapper>
 		);
@@ -101,7 +113,8 @@ const mapStateToProps = (state) =>{
 		list: state.getIn(['header', 'list']),
 		page: state.getIn(['header','page']),
 		mouseIn: state.getIn(['header','mouseIn']),
-		totalPage: state.getIn(['header','totalPage'])
+		totalPage: state.getIn(['header','totalPage']),
+		login: state.getIn(['login','login'])
 
 	}
 }
@@ -136,6 +149,9 @@ const mapdispatchtoprops = (dispatch) =>{
 			const nextpage = page===totalPage? 1:page+1;
 			const action = actionCreators.changePage(nextpage)
 			dispatch(action)
+		},
+		logout(){
+			dispatch(loginActionCreators.logout())
 		}
 
 

@@ -17,3 +17,5 @@ npm install redux-thunk
 npm install axios
 
 npm install react-router-dom
+
+npm install react-loadable
